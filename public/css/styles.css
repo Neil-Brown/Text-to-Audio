@@ -44,11 +44,12 @@ textArea{
     border:solid 1px #ccc; 
     color:var(--dark-bg);
     resize: none;
+  overflow-y:scroll
 }
 
 textArea:focus{
     border:solid 1px #ccc;
-    outline:none!important
+    outline:none!important;
 }
 
 .dropdown-item:hover{

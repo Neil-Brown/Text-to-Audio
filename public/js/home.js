@@ -51,12 +51,13 @@ async function speak(){
 			break
 		}
 	}
-	msg.text = document.querySelector("#textInput").value
+	text = textBox.value.slice(textBox.selectionStart, textBox.value.length)
+	msg.text = text
 	msg.pitch = parseFloat(document.querySelector("#pitch").value)
 	msg.rate = parseFloat(document.querySelector("#rate").value)
 
 	msg.volume = 1
-	msg.onboundary = onboundaryHandler;
+	msg.onboundary = onboundaryHandler
  	synth.speak(msg);
 	msg.addEventListener("end", speechEnd, false)
 }
@@ -82,24 +83,30 @@ function speechEnd(e){
 }
 
 function onboundaryHandler(event){
-    var textarea = document.getElementById('textInput');
-    var value = textarea.value;
+    var value = text
     var index = event.charIndex;
     var word = getWordAt(value, index);
-    var anchorPosition = getWordStart(value, index);
+    var anchorPosition = getWordStart(value, index) + (textBox.value.length - text.length);
     var activePosition = anchorPosition + word.length;
+	
+    if (textBox.setSelectionRange) {
+		textBox.blur()
+		textBox.focus()
+		const fullText = textBox.value;
+		textBox.value = fullText.substring(0, activePosition);
+		textBox.scrollTop = textBox.scrollHeight;
+		textBox.value = fullText;
 
-    textarea.focus();
-
-    if (textarea.setSelectionRange) {
-       textarea.setSelectionRange(anchorPosition, activePosition);
-    }
+       textBox.setSelectionRange(anchorPosition, activePosition);
+	}
     else {
-       var range = textarea.createTextRange();
+       var range = texBox.createTextRange();
        range.collapse(true);
+		textBox.focus();
        range.moveEnd('character', activePosition);
        range.moveStart('character', anchorPosition);
        range.select();
+		
     }
 };
 
@@ -133,9 +140,19 @@ function getWordStart(str, pos) {
 }
 
 
+function paste(e){
+	e.preventDefault()
+	let txt = (e.clipboardData || window.clipboardData).getData('text').replace(/[^\x20-\x7E]/gmi, " ");
+	txt.replace("  ", " ")
+	textBox.value = txt
+}
+
 document.querySelector("#speak").addEventListener("click", speak)
 document.querySelector("#pause").addEventListener("click", pause)
 document.querySelector("#stop").addEventListener("click", stop)
 
+const textBox = document.querySelector("#textInput")
+textBox.addEventListener("paste", paste)
+let text
 let s = setSpeech();
 s.then((v) => populateDropdown(v));
