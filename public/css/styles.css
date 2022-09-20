@@ -7,8 +7,20 @@
     margin:1rem;
 }
 
+.navbar{
+  text-align:center;
+  background:var(--dark-bg)!important;
+
+}
+.navbar-brand{
+  width:100%;
+  color:#fff;
+  opacity:.9;
+}
+
 #voice{
-    width:100%
+    width:100%;
+  font-size:.8rem
 }
 
 #controls .col{
@@ -38,7 +50,7 @@ input[type=number] {
 
 textArea{
     width:100%;
-    height:20rem;
+    height:18rem;
     padding:1rem;
     border-radius:1rem;
     border:solid 1px #ccc; 
@@ -83,3 +95,9 @@ textArea:focus{
     color:white;
     opacity:.85
 }
+
+#audioPlayer{
+  display:none;
+  width:100%
+}
+

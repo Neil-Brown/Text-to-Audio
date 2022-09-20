@@ -42,6 +42,14 @@ function changeVoice(voice){
 	}
 }
 
+function play(){
+  let rc = document.querySelector("#recordCheck")
+  if(rc.checked){
+    getMedia()
+  }else{
+    speak()
+  }
+}
 async function speak(){
 	synth.cancel()
 	let msg = new SpeechSynthesisUtterance()
@@ -79,7 +87,21 @@ function stop(e){
 }
 
 function speechEnd(e){
+	let ap = document.querySelector("#audioPlayer")
 	document.querySelector("textArea").setSelectionRange(0,0)
+	if(typeof(mediaRecorder) !== "undefined" && mediaRecorder.state !== "inactive"){
+		mediaRecorder.stop()
+	}else{
+		ap.style.display = "none"
+	}
+}
+
+function loadAudio(){
+  ap = document.querySelector("#audioPlayer")
+  ap.src = URL.createObjectURL(blob);
+  ap.style.display = "block"
+  blob = undefined
+  ap.scrollIntoView()
 }
 
 function onboundaryHandler(event){
@@ -88,7 +110,7 @@ function onboundaryHandler(event){
     var word = getWordAt(value, index);
     var anchorPosition = getWordStart(value, index) + (textBox.value.length - text.length);
     var activePosition = anchorPosition + word.length;
-	
+
     if (textBox.setSelectionRange) {
 		textBox.blur()
 		textBox.focus()
@@ -106,7 +128,7 @@ function onboundaryHandler(event){
        range.moveEnd('character', activePosition);
        range.moveStart('character', anchorPosition);
        range.select();
-		
+
     }
 };
 
@@ -147,10 +169,48 @@ function paste(e){
 	textBox.value = txt
 }
 
-document.querySelector("#speak").addEventListener("click", speak)
+async function getMedia ()  {
+text = "The revolution will not be televised";
+
+blob = await new Promise(async resolve => {
+    console.log("picking system audio");
+    const stream = await navigator.mediaDevices.getDisplayMedia({video:true, audio:true});
+    const track = stream.getAudioTracks()[0];
+    if(!track)
+        throw "System audio not available";
+
+    stream.getVideoTracks().forEach(track => track.stop());
+
+    const mediaStream = new MediaStream();
+    mediaStream.addTrack(track);
+
+    const chunks = [];
+    mediaRecorder = new MediaRecorder(mediaStream, {bitsPerSecond:128000});
+    mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0)
+            chunks.push(event.data);
+    }
+    mediaRecorder.onstop = () => {
+        stream.getTracks().forEach(track => track.stop());
+        mediaStream.removeTrack(track);
+        resolve(new Blob(chunks))
+    }
+    mediaRecorder.start();
+	speak()
+    // const utterance = new SpeechSynthesisUtterance(text);
+    // utterance.onend = () => mediaRecorder.stop();
+    // window.speechSynthesis.speak(utterance);
+    // console.log("speaking...");
+});
+loadAudio()
+}
+
+document.querySelector("#speak").addEventListener("click", play)
 document.querySelector("#pause").addEventListener("click", pause)
 document.querySelector("#stop").addEventListener("click", stop)
 
+let mediaRecorder
+let blob
 const textBox = document.querySelector("#textInput")
 textBox.addEventListener("paste", paste)
 let text

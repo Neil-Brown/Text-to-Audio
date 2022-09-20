@@ -6,7 +6,7 @@ block content
 				.dropdown
 					button.btn.btn-primary.dropdown-toggle#voice(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") No voice Selected
 					.dropdown-menu#voiceMenu(aria-labelledby="voice")
-		#controls
+		.controls#voiceControl
 			.row
 				.col
 					input#pitch(type="number" min="0" max="2" step="0.1" value="1")
@@ -19,15 +19,23 @@ block content
 					label(for="rate") Rate (0.1 - 10)
 		.row
 			.col
-				textArea#textInput(type="text")
+				textArea#textInput(type="text" placeholder="Put text here")
+		.controls#audioControl
+			.row
+				.col
+					button.btn.btn-primary#speak Play
+				.col
+					button.btn.btn-primary#pause Pause
+				.col
+					button.btn.btn-primary#stop Stop
+			.row
+				.col
+					.form-check.form-switch
+						input#recordCheck.form-check-input(type="checkbox" value="" )
+						label.form-check-label(for="recordCheck") Record Audio
 		.row
-			.col
-				button.btn.btn-primary#speak Play
-			.col
-				button.btn.btn-primary#pause Pause
-			.col
-				button.btn.btn-primary#stop Stop
+			.col.center
+				audio#audioPlayer(controls='true')
 
 block append scripts
 	script(src="/js/home.js")
-	script(src="/js/recorder.js")
