@@ -26,7 +26,8 @@
 .dropdown-menu{
   background:var(--dark-bg);
   color:white;
-  opacity:.85
+  opacity:.85;
+  
 }
 
 .dropdown-item:hover{
@@ -107,5 +108,18 @@ textArea:focus{
 #audioPlayer{
   display:none;
   width:100%
+}
+
+@media only screen and (max-width: 400px) {
+  .dropdown-item{
+    max-width:18rem;
+    overflow:hidden
+  }
+}
+
+#footer{
+  background:var(--dark-bg);
+  padding:1rem;
+  color:white
 }
 

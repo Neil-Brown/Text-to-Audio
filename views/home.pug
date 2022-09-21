@@ -19,7 +19,7 @@ block content
 					label(for="rate") Rate (0.1 - 10)
 		.row
 			.col
-				textArea#textInput(type="text" placeholder="Put text here")
+				textArea#textInput(type="text" placeholder="Place text to convert here ...")
 		.controls#audioControl
 			.row
 				.col
@@ -35,7 +35,7 @@ block content
 						label.form-check-label(for="recordCheck") Record Audio
 		.row
 			.col.center
-				audio#audioPlayer(controls='true')
+				audio#audioPlayer(controls='true' type="audio/wav" title="text2audio.wav")
 
 block append scripts
 	script(src="/js/home.js")
