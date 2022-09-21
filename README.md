@@ -18,5 +18,10 @@ This project is created with
 * Pug
 
 ## Setup
+Visit https://text2audio-convertor.herokuapp.com/
+
+Or clone the repo and run 
+```node app``` from the root directory.
+Navigate to ```localhost/3000``` in your browser
 
 
