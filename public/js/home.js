@@ -1,38 +1,18 @@
-let synth = window.speechSynthesis;
-let voiceDropdown
-
-let voices
-
-
-function setSpeech() {
-    return new Promise(
-        function (resolve, reject) {
-            let id;
-            id = setInterval(() => {
-                if (synth.getVoices().length !== 0) {
-                    resolve(synth.getVoices());
-                    clearInterval(id);
-                }
-            }, 10);
-        }
-    )
-}
-
-function populateDropdown(voices) {
-  for(const v of voices){
-  	if(v.lang.split("-")[0] === "en"){
-      if(v.default){
-      	changeVoice(v)
-      	}
-  		let a = document.createElement("a")
+function updateVoices() {
+  // add an option for each available voice that isn't already added
+  window.speechSynthesis.getVoices().forEach(voice => {
+    const isAlreadyAdded = [...document.querySelectorAll(".dropdown-item")].some(option => option.value === voice.voiceURI);
+    if (!isAlreadyAdded) {
+		let a = document.createElement("a")
   		a.classList.add("dropdown-item")
-  		a.textContent = v.name
-  		a.addEventListener("click", ()=>{changeVoice(v)})
+  		a.textContent = voice.name
+  		a.addEventListener("click", ()=>{changeVoice(voice)})
   		document.querySelector("#voiceMenu").appendChild(a)
-    	    }
-  }
-	voiceDropdown = new BSN.Dropdown( '#voice' );
+
+    }
+  });
 }
+
 
 function changeVoice(voice){
 	document.querySelector("#voice").textContent = voice.name
@@ -59,7 +39,11 @@ async function speak(){
 			break
 		}
 	}
-	text = textBox.value.slice(textBox.selectionStart, textBox.value.length)
+	let start = textBox.selectionStart
+	if(textBox.selectionStart === textBox.value.length){
+		start = 0
+	}
+	text = textBox.value.slice(start, textBox.value.length)
 	msg.text = text
 	msg.pitch = parseFloat(document.querySelector("#pitch").value)
 	msg.rate = parseFloat(document.querySelector("#rate").value)
@@ -197,10 +181,6 @@ blob = await new Promise(async resolve => {
     }
     mediaRecorder.start();
 	speak()
-    // const utterance = new SpeechSynthesisUtterance(text);
-    // utterance.onend = () => mediaRecorder.stop();
-    // window.speechSynthesis.speak(utterance);
-    // console.log("speaking...");
 });
 loadAudio()
 }
@@ -209,10 +189,13 @@ document.querySelector("#speak").addEventListener("click", play)
 document.querySelector("#pause").addEventListener("click", pause)
 document.querySelector("#stop").addEventListener("click", stop)
 
+let synth = window.speechSynthesis;
 let mediaRecorder
 let blob
 const textBox = document.querySelector("#textInput")
 textBox.addEventListener("paste", paste)
 let text
-let s = setSpeech();
-s.then((v) => populateDropdown(v));
+const voiceDropdown = new BSN.Dropdown( '#voice' );
+// update voices immediately and whenever they are loaded
+updateVoices();
+window.speechSynthesis.onvoiceschanged = updateVoices;
