@@ -31,6 +31,12 @@ function play(){
   }
 }
 async function speak(){
+	if(typeof(currentVoice) === "undefined"){
+		alertText.textContent = "Please select a voice"
+		alert.style.display = "block"
+		alert.scrollIntoView()
+		return
+	}
 	synth.cancel()
 	let msg = new SpeechSynthesisUtterance()
 	for(const voice of window.speechSynthesis.getVoices()){
@@ -154,14 +160,22 @@ function paste(e){
 }
 
 async function getMedia ()  {
-text = "The revolution will not be televised";
-
 blob = await new Promise(async resolve => {
-    console.log("picking system audio");
-    const stream = await navigator.mediaDevices.getDisplayMedia({video:true, audio:true});
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+		alertText.textContent = "getDisplayMedia not supported by this browser"
+		alert.style.display = "block"
+		document.querySelector("#recordCheck").checked = false
+		speak()
+		return
+	}
+    const stream = await navigator.mediaDevices.getDisplayMedia({audio:true, video:true});
     const track = stream.getAudioTracks()[0];
-    if(!track)
-        throw "System audio not available";
+    if(!track){
+		alertText.textContent = "System audio not available";
+		alert.style.display = "block"
+		alert.scrollIntoView()
+		return
+	}
 
     stream.getVideoTracks().forEach(track => track.stop());
 
@@ -188,6 +202,10 @@ loadAudio()
 document.querySelector("#speak").addEventListener("click", play)
 document.querySelector("#pause").addEventListener("click", pause)
 document.querySelector("#stop").addEventListener("click", stop)
+document.querySelector(".close").addEventListener("click", (e)=>{
+  e.preventDefault()
+  alert.style.display = "none"
+})
 
 let synth = window.speechSynthesis;
 let mediaRecorder
@@ -196,6 +214,7 @@ const textBox = document.querySelector("#textInput")
 textBox.addEventListener("paste", paste)
 let text
 const voiceDropdown = new BSN.Dropdown( '#voice' );
-// update voices immediately and whenever they are loaded
+const alert = document.querySelector(".alert")
+const alertText = document.querySelector("#alertText")
 updateVoices();
 window.speechSynthesis.onvoiceschanged = updateVoices;

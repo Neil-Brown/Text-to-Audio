@@ -123,3 +123,13 @@ textArea:focus{
   color:white
 }
 
+.alert{
+  background:red;
+  color:black;
+  border-radius:1rem;
+  display:none
+}
+
+.close{
+  text-shadow:0 0
+}

@@ -33,6 +33,12 @@ block content
 					.form-check.form-switch
 						input#recordCheck.form-check-input(type="checkbox" value="" )
 						label.form-check-label(for="recordCheck") Record Audio
+			.row
+				.col
+					.alert.alert-warning.alert-dismissible.fade.show(role="alert")
+						span#alertText Test
+						button.close(type="button" aria-label="Close")
+							span &times
 		.row
 			.col.center
 				audio#audioPlayer(controls='true' type="audio/wav" title="text2audio.wav")
